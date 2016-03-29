@@ -1,18 +1,20 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <tuple>
 #include <cuda_runtime.h>
+
 #include "cusparse.h"
 #include "mvstructs.h"
 
-cusparseHandle_t initCUSparse() {
+std::tuple<cusparseHandle_t, std::string> initCUSparse() {
     cusparseStatus_t status;
     cusparseHandle_t handle=0;
 
     // init cusparse
     status = cusparseCreate(&handle);
     if(status != CUSPARSE_STATUS_SUCCESS){
-        std::cout<<"CUSPARSE Library initialisation failed"<<std::endl;
+        std::cerr<<"CUSPARSE Library initialisation failed"<<std::endl;
         cusparseDestroy(handle);
         exit(1);
     }
@@ -23,20 +25,20 @@ cusparseHandle_t initCUSparse() {
     cudaError_t cudaStat;
     cudaStat = cudaGetDevice(&devID);
     if(cudaSuccess != cudaStat){
-        std::cout<<"Error: cudaGetDevice failed!"<<std::endl;
+        std::cerr<<"Error: cudaGetDevice failed!"<<std::endl;
         // do some cleanup...
         cusparseDestroy(handle);
-        std::cout<<"Error: cudaStat: "<<cudaStat<<", "<<
+        std::cerr<<"Error: cudaStat: "<<cudaStat<<", "<<
             cudaGetErrorString(cudaStat)<<std::endl;
         exit(1);
     }
 
     cudaStat = cudaGetDeviceProperties( &prop, devID) ;
     if (cudaSuccess != cudaStat){
-        std::cout<<"Error: cudaGetDeviceProperties failed!"<<std::endl;
+        std::cerr<<"Error: cudaGetDeviceProperties failed!"<<std::endl;
         // do some cleanup...
         cusparseDestroy(handle);
-        std::cout<<"Error: cudaStat: "<<cudaStat<<", "<<
+        std::cerr<<"Error: cudaStat: "<<cudaStat<<", "<<
             cudaGetErrorString(cudaStat)<<std::endl;
         exit(1);
     }
@@ -45,56 +47,90 @@ cusparseHandle_t initCUSparse() {
     if (cc <= 130){
         cusparseDestroy(handle);
 
-        std::cout<<"waive the test because only sm13 and above are supported"<<std::endl;
-        std::cout<<"the device has compute capability"<<cc<<std::endl;
-        std::cout<<"example test WAIVED"<<std::endl;
+        std::cerr<<"waive the test because only sm13 and above are supported"<<std::endl;
+        std::cerr<<"the device has compute capability"<<cc<<std::endl;
+        std::cerr<<"example test WAIVED"<<std::endl;
         exit(2);
     }else{
-        std::cout<<"Compute capability: "<<prop.major<<"."<<prop.minor<<std::endl;
+        std::cerr<<"Compute capability: "<<prop.major<<"."<<prop.minor<<std::endl;
     }
 
-    return handle;
+    std::string deviceName(prop.name);
+    return std::make_tuple(handle, deviceName);
 }
 
+void printSqlResult(std::string host,
+                    std::string device,
+                    std::string matrix,
+                    float runtime) {
+    std::cout<<"insert into TABLE (time, host, device, matrix) values ("<<
+        runtime << ", \'" <<
+        host    << "\', \'" <<
+        device  << "\', \'" <<
+        matrix  << "\'"<<
+        ");" << std::endl;
+}
 
 int main(int argc, char const *argv[])
 {
-    // build the matrix vector
-    cooMatrix cm(9, 4, 4);
-    cm.push(0,0,1.0);
-    cm.push(2,0,2.0);
-    cm.push(3,0,3.0);
-    cm.push(1,1,4.0);
-    cm.push(0,2,5.0);
-    cm.push(2,2,6.0);
-    cm.push(3,2,7.0);
-    cm.push(1,3,8.0);
-    cm.push(3,3,9.0);
-    cm.print();
+    if(argc < 4){
+        std::cerr<<"Error: no hostname given!"<<std::endl;
+        exit(1);
+    }
+    if(argc < 3){
+        std::cerr<<"Error: no matrix name given!"<<std::endl;
+        exit(1);
+    }
+    if(argc < 2){
+        std::cerr<<"Error: no matrix file specified!"<<std::endl;
+        exit(1);
+    }
+    std::string mfname(argv[1]);
+    std::string mname(argv[2]);
+    std::string hostname(argv[3]);
+    std::cerr<<"Matrix filename: "<<mfname<<std::endl;
+    std::cerr<<"Matrix name: "<<mname<<std::endl;
+    std::cerr<<"Hostname: "<<hostname<<std::endl;
 
-    denseVector v(8);
-    v.push(10.0);
-    v.push(20.0);
-    v.push(30.0);
-    v.push(40.0);
-    v.push(50.0);
-    v.push(60.0);
-    v.push(70.0);
-    v.push(80.0);
+    // input matrix
+    cooMatrix cm(mfname);
+
+    // input vector
+    denseVector v(cm.getWidth());
+    v.fillRandom();
+    std::cerr<<"v before: "<<std::endl;
     v.print();
 
-    denseVector result(8);
+    // output vector
+    denseVector result(cm.getWidth());
     
-    cusparseHandle_t handle = initCUSparse();
+    // cusparse handle
+    auto hn = initCUSparse();
+    auto handle = std::get<0>(hn);
+    auto devname = std::get<1>(hn);
+    std::cerr<<"Running on device: "<<devname<<std::endl;
 
+    // csr version of the matrix
     csrMatrix csrm = cm.asCSR(handle);
 
     // compute a sparse matrix vector multiplication
-    csrm.spmv(handle, v, result);
+    auto times = csrm.spmv(handle, v, result);
+    std::sort(times.begin(), times.end());
+    if(times.size()%2){
+        std::cerr<<"Median: "<<times[times.size()/2]<<std::endl;
+    }else{
+        std::cerr<<"Median: "<<times[(times.size()+1)/2]<<std::endl;
+    }
+    for(auto rt : times){
+        printSqlResult(hostname, devname, mname + ".mtx", rt);
+    }
 
-    std::cout<<"result after: "<<std::endl;
+
+    // the result
+    std::cerr<<"result after: "<<std::endl;
     result.print();
 
+    // clean up
     cusparseDestroy(handle);
 
     return 0;

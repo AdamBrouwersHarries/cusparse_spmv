@@ -9,11 +9,11 @@ OBJ = obj
 APP = apps
 
 # Sources for building object files, and their associated objects
-SOURCES = mvstructs.cpp
+SOURCES = mvstructs.cpp mmio.cpp
 OBJECTS = $(patsubst %.cpp,$(OBJ)/%.o,$(SOURCES))
 
 # Sources for the applications this makefile builds
-APP_SOURCES = csrspmv.cpp
+APP_SOURCES = csrspmv.cpp 
 APPS = $(patsubst %.cpp,$(BIN)/%,$(APP_SOURCES))
 
 # Universal C flags

@@ -1,8 +1,16 @@
 #pragma once
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+#include <random>
+#include <algorithm>
+#include <functional>
+#include "mmio.h"
 #include <cuda_runtime.h>
 #include "cusparse.h"
+
 
 enum MemStatus {
     HostOutdated,
@@ -18,6 +26,7 @@ public:
     denseVector & operator= (const denseVector&);
     void push(float);
     void fill(float);
+    void fillRandom();
     void print();
     float* getDevPtr();
     void download();
@@ -38,7 +47,7 @@ public:
 
     csrMatrix(int, int, int, int*, int*, float*);
     ~csrMatrix();
-    void spmv(cusparseHandle_t,denseVector&,denseVector&);
+    std::vector<float> spmv(cusparseHandle_t,denseVector&,denseVector&);
 private:
     // device pointers 
     int* rowDevPtr;
@@ -57,10 +66,13 @@ class cooMatrix
 {
 public:
     cooMatrix(int, int, int);
+    cooMatrix(std::string);
     ~cooMatrix();
     void push(int, int, float);
+    // sorting after pushing values
     void print();
     csrMatrix asCSR(cusparseHandle_t);
+    int getWidth() {return w;}
 
 private: 
     int nnz;
@@ -80,6 +92,8 @@ private:
     void updateBuffers();
     // cleanup functionality
     void cleanup();
+    // memory allocation
+    void alloc();
 };
 
 
