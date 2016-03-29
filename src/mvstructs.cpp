@@ -52,10 +52,10 @@ std::vector<float> csrMatrix::spmv(cusparseHandle_t handle, denseVector& _x, den
     float alpha = 1.0;
     float beta = 1.0;
 
-    int iterations = 30;
+    int iterations = 100;
 
-    float* runtimes = new float[30];
-    for(int i = 0;i<30;i++){
+    float* runtimes = new float[iterations];
+    for(int i = 0;i<iterations;i++){
         _y.fill(0.0f);
         // perform the csrspmv computation, and time it
         cudaEventRecord(start);
