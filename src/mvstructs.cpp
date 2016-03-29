@@ -42,7 +42,7 @@ std::vector<float> csrMatrix::spmv(cusparseHandle_t handle, denseVector& _x, den
     
 
     std::cerr<<"_y before: "<<std::endl;
-    _y.print();
+    // _y.print();
 
     std::cerr<<"Starting spmv..."<<std::endl;
     // get a pointer to the vector's device memory
@@ -80,7 +80,7 @@ std::vector<float> csrMatrix::spmv(cusparseHandle_t handle, denseVector& _x, den
 
 
     std::cerr<<"_y after: "<<std::endl;
-    _y.print();
+    // _y.print();
 
     // copy y into _r;
     _r = _y;
@@ -211,7 +211,7 @@ cooMatrix::cooMatrix(std::string filename) {
         valHostPtr[i] = c.val;
     }
     // print it
-    print();
+    // print();
     // set the iterator to 0, and the memstatus to device outdated
     ixPtr = 0;
     // assume we start with the device buffers outdated

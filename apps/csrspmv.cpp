@@ -99,7 +99,7 @@ int main(int argc, char const *argv[])
     denseVector v(cm.getWidth());
     v.fillRandom();
     std::cerr<<"v before: "<<std::endl;
-    v.print();
+    // v.print();
 
     // output vector
     denseVector result(cm.getWidth());
@@ -128,7 +128,7 @@ int main(int argc, char const *argv[])
 
     // the result
     std::cerr<<"result after: "<<std::endl;
-    result.print();
+    // result.print();
 
     // clean up
     cusparseDestroy(handle);
