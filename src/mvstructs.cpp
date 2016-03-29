@@ -169,7 +169,7 @@ cooMatrix::cooMatrix(std::string filename) {
         }else{
             fscanf(f, "%d %d %f\n", &(tmp.row), &(tmp.col), &(tmp.val));
         }
-        std::cerr<<"row: " << tmp.row << " col: " << tmp.col  << " val: " << tmp.val << std::endl;
+        // std::cerr<<"row: " << tmp.row << " col: " << tmp.col  << " val: " << tmp.val << std::endl;
         tmp.row -= 1;
         tmp.col -= 1;
         nzelems.push_back(tmp);
