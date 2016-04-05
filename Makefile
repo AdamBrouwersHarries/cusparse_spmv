@@ -1,5 +1,5 @@
 # Compiler
-CC = nvcc
+CC = g++
 
 # (Final) Binary, Source, Include, Object and Apps directories
 BIN = bin
@@ -17,7 +17,7 @@ APP_SOURCES = csrspmv.cpp
 APPS = $(patsubst %.cpp,$(BIN)/%,$(APP_SOURCES))
 
 # Universal C flags
-CFLAGS = -std=c++11 -O3 --debug --device-debug
+CFLAGS = -std=c++11 -O3 
 
 # Get the host and shell, to determine include directories and link options
 HOST = $(shell hostname)
@@ -25,10 +25,10 @@ UNAME = $(shell uname)
 SKELCL_DIR = 
 
 # Add the include directories to a single variable, which we can pass to $(CC)
-INCLUDE = -I$(INC)
+INCLUDE = -I$(INC) -I/usr/local/cuda-6.0/include/
 
 # Define a single general linker string for $(CC)
-LINK = -lcusparse
+LINK = -L/usr/local/cuda-6.0/lib64/ -lcuda -lcudart -lcusparse
 
 # discover where source and header files are located
 vpath %.cpp $(SRC) $(APPS)

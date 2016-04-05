@@ -343,6 +343,9 @@ void cooMatrix::alloc() {
        (colAlloc != cudaSuccess) || 
        (valAlloc != cudaSuccess)) {
         std::cerr<<"Device malloc failed before line "<<__LINE__<<" in "<<__FILE__<<std::endl;
+	std::cerr<<"rowAlloc: "<<cudaGetErrorString(rowAlloc)<<std::endl;
+	std::cerr<<"colAlloc: "<<cudaGetErrorString(colAlloc)<<std::endl;
+	std::cerr<<"valAlloc: "<<cudaGetErrorString(valAlloc)<<std::endl;
         cleanup();
     }
 }
