@@ -149,9 +149,8 @@ int main(int argc, char const *argv[])
     }else{
         std::cerr<<"Median: "<<times[(times.size()+1)/2]<<std::endl;
     }
-    for(auto rt : times){
-        printSqlResult(hostname, devname, mname + ".mtx", exID, rt);
-    }
+    
+    printSqlResult(hostname, devname, mname + ".mtx", exID, times);
 
 
     // the result
