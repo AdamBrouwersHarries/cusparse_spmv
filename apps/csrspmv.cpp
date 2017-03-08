@@ -62,17 +62,43 @@ std::tuple<cusparseHandle_t, std::string> initCUSparse() {
 void printSqlResult(std::string host,
                     std::string device,
                     std::string matrix,
-                    float runtime) {
-    std::cout<<"insert into TABLE (time, host, device, matrix) values ("<<
-        runtime << ", \'" <<
-        host    << "\', \'" <<
-        device  << "\', \'" <<
-        matrix  << "\'"<<
-        ");" << std::endl;
+                    std::string exID, 
+                    std::vector<float> runtimes) {
+    std::cout<<"insert into TABLE (time, correct, kernel, global, local, host, device, matrix, iteration, trial, statistic, experiment_id) values ";
+    // std::cout<<"insert into TABLE (time, host, device, matrix) values ("<<
+    int trial = 0;
+    for (auto time: runtimes) {
+
+        if(trial == 0){
+            std::cout << "(";
+        }else{
+            std::cout << ",(";
+        }
+        std::cout <<
+        time <<                   "," << // time
+        "\'correct\'"  <<         "," << // correct 
+        "\'cuSPARSE\'" <<         "," << // kernel
+        "-1" <<                   "," << // global
+        "-1" <<                   "," << // local
+        "\'" << host << "\'" <<   "," << // host
+        "\'" << device << "\'" << "," << // device 
+        "\'" << matrix << "\'" << "," << // matrix 
+        "0"  <<                   "," << // iteration
+        trial <<                  "," << // trial
+        "\'RAW_RESULT\'" <<       "," << // statistic
+        "\'" << exID << "\'" <<   "," << // experiment ID
+        "), ";
+        trial++;
+    }
+    std::cout << ";" << std::endl;
 }
 
 int main(int argc, char const *argv[])
 {
+    if(argc < 5){
+        std::cerr<<"No expermient id given!" << std::endl;
+        exit(1);
+    }
     if(argc < 4){
         std::cerr<<"Error: no hostname given!"<<std::endl;
         exit(1);
@@ -88,9 +114,11 @@ int main(int argc, char const *argv[])
     std::string mfname(argv[1]);
     std::string mname(argv[2]);
     std::string hostname(argv[3]);
+    std::string exID(argv[4]);
     std::cerr<<"Matrix filename: "<<mfname<<std::endl;
     std::cerr<<"Matrix name: "<<mname<<std::endl;
     std::cerr<<"Hostname: "<<hostname<<std::endl;
+    std::cerr<<"Experiment ID: "<<exID<<std::endl;
 
     // input matrix
     cooMatrix cm(mfname);
@@ -122,7 +150,7 @@ int main(int argc, char const *argv[])
         std::cerr<<"Median: "<<times[(times.size()+1)/2]<<std::endl;
     }
     for(auto rt : times){
-        printSqlResult(hostname, devname, mname + ".mtx", rt);
+        printSqlResult(hostname, devname, mname + ".mtx", exID, rt);
     }
 
 
