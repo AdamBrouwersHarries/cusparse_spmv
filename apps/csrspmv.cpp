@@ -63,8 +63,9 @@ void printSqlResult(std::string host,
                     std::string device,
                     std::string matrix,
                     std::string exID, 
+                    std::string table,
                     std::vector<float> runtimes) {
-    std::cout<<"insert into TABLE (time, correct, kernel, global, local, host, device, matrix, iteration, trial, statistic, experiment_id) values ";
+    std::cout<<"insert into "<<table<<" (time, correct, kernel, global, local, host, device, matrix, iteration, trial, statistic, experiment_id) values ";
     // std::cout<<"insert into TABLE (time, host, device, matrix) values ("<<
     int trial = 0;
     for (auto time: runtimes) {
@@ -114,10 +115,18 @@ int main(int argc, char const *argv[])
     std::string mname(argv[2]);
     std::string hostname(argv[3]);
     std::string exID(argv[4]);
+    std::string table;
+    if(argc < 6){
+        std::cerr << "No SQL table name given - defaulting to TABLE";
+        table = "TABLE";
+    }else{
+        table = std::string(argv[5]);
+    }
     std::cerr<<"Matrix filename: "<<mfname<<std::endl;
     std::cerr<<"Matrix name: "<<mname<<std::endl;
     std::cerr<<"Hostname: "<<hostname<<std::endl;
     std::cerr<<"Experiment ID: "<<exID<<std::endl;
+    std::cerr<<"SQL table: " << table <<std::endl;
 
     // input matrix
     cooMatrix cm(mfname);
@@ -149,7 +158,7 @@ int main(int argc, char const *argv[])
         std::cerr<<"Median: "<<times[(times.size()+1)/2]<<std::endl;
     }
     
-    printSqlResult(hostname, devname, mname + ".mtx", exID, times);
+    printSqlResult(hostname, devname, mname + ".mtx", exID, table, times);
 
 
     // the result
