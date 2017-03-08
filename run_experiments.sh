@@ -20,9 +20,7 @@ mkdir -p "results-$exID"
 for f in $(cat $datasetf/datasets.txt);
 do
 	echo "matrix: $f"
-	echo "global: $global"
-	echo "local: $local"
-	echo "Resultfile: result_$f-$global-$l.txt"
+	echo "Resultfile: result_$f.txt"
 
 	$spmv $datasetf/$f/$f.mtx $f $HOST $exID $table &> results-$exID/result_$f.txt
 done
