@@ -95,6 +95,9 @@ void printSqlResult(std::string host,
 
 int main(int argc, char const *argv[])
 {
+    if(argc < 6){
+        std::cerr<<"No table name given!" << std::endl;
+    }
     if(argc < 5){
         std::cerr<<"No expermient id given!" << std::endl;
         exit(1);
@@ -115,13 +118,7 @@ int main(int argc, char const *argv[])
     std::string mname(argv[2]);
     std::string hostname(argv[3]);
     std::string exID(argv[4]);
-    std::string table;
-    if(argc < 6){
-        std::cerr << "No SQL table name given - defaulting to TABLE";
-        table = "TABLE";
-    }else{
-        table = std::string(argv[5]);
-    }
+    std::string table(argv[5]);
     std::cerr<<"Matrix filename: "<<mfname<<std::endl;
     std::cerr<<"Matrix name: "<<mname<<std::endl;
     std::cerr<<"Hostname: "<<hostname<<std::endl;
