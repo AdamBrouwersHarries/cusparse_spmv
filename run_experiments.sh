@@ -13,6 +13,7 @@ echo "Table name: $table"
 now=$(date -Iminutes)
 hsh=$(git rev-parse HEAD)
 exID="$hsh-$now"
+host=$(hostname)
 
 # make a folder for results
 mkdir -p "results-$exID"
@@ -22,5 +23,5 @@ do
 	echo "matrix: $f"
 	echo "Resultfile: result_$f.txt"
 
-	$spmv $datasetf/$f/$f.mtx $f $HOST $exID $table &> results-$exID/result_$f.txt
+	$spmv $datasetf/$f/$f.mtx $f $host $exID $table &> results-$exID/result_$f.txt
 done
