@@ -25,10 +25,10 @@ UNAME = $(shell uname)
 SKELCL_DIR = 
 
 # Add the include directories to a single variable, which we can pass to $(CC)
-INCLUDE = -I$(INC) -I/usr/local/cuda-6.0/include/
+INCLUDE = -I$(INC) -I/usr/local/cuda-8.0/include/
 
 # Define a single general linker string for $(CC)
-LINK = -L/usr/local/cuda-6.0/lib64/ -lcuda -lcudart -lcusparse
+LINK = -L/usr/local/cuda-8.0/lib64/ -lcuda -lcudart -lcusparse
 
 # discover where source and header files are located
 vpath %.cpp $(SRC) $(APPS)
