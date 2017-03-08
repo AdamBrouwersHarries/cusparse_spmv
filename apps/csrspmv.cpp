@@ -86,8 +86,7 @@ void printSqlResult(std::string host,
         "0"  <<                   "," << // iteration
         trial <<                  "," << // trial
         "\'RAW_RESULT\'" <<       "," << // statistic
-        "\'" << exID << "\'" <<   "," << // experiment ID
-        ")";
+        "\'" << exID << "\'" <<   ")" ; // experiment ID
         trial++;
     }
     std::cout << ";" << std::endl;
