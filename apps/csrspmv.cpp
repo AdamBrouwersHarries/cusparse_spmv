@@ -87,7 +87,7 @@ void printSqlResult(std::string host,
         trial <<                  "," << // trial
         "\'RAW_RESULT\'" <<       "," << // statistic
         "\'" << exID << "\'" <<   "," << // experiment ID
-        "), ";
+        ")";
         trial++;
     }
     std::cout << ";" << std::endl;
@@ -154,7 +154,7 @@ int main(int argc, char const *argv[])
 
 
     // the result
-    std::cerr<<"result after: "<<std::endl;
+    // std::cerr<<"result after: "<<std::endl;
     // result.print();
 
     // clean up
