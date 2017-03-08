@@ -97,6 +97,7 @@ int main(int argc, char const *argv[])
 {
     if(argc < 6){
         std::cerr<<"No table name given!" << std::endl;
+        exit(1);
     }
     if(argc < 5){
         std::cerr<<"No expermient id given!" << std::endl;
