@@ -103,7 +103,7 @@ void printSqlResult(std::string host, std::string device, std::string matrix,
   }
 
   auto median = runtimes[runtimes.size() / 2];
-  std::cout << median << ", (" << // time
+  std::cout << ",(" << median << ", " << // time
       "\'correct\'"
             << "," << // correct
       "\'cuSPARSE\'"
