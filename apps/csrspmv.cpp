@@ -191,7 +191,7 @@ int main(int argc, char const *argv[]) {
   //   std::cerr << "Median: " << times[(times.size() + 1) / 2] << std::endl;
   // }
 
-  printSqlResult(hostname, devname, mname + ".mtx", exID, table, times);
+  printSqlResult(hostname, devname, mname, exID, table, times);
 
   // the result
   // std::cerr<<"result after: "<<std::endl;
